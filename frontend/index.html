@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Fruit Store</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="header">
+    <div class="logo">🍎 Fruit Store</div>
+
+    <nav class="nav">
+      <a href="#" onclick="event.preventDefault(); showPage('loginPage')">Login</a>
+      <a href="#" onclick="event.preventDefault(); showPage('subscriptionPage')">Subscription</a>
+      <a href="#contact-support">Contact</a>
+    </nav>
+
+    <button type="button" onclick="logout()" class="logout-btn">Logout</button>
+  </header>
+
+  <!-- LOGIN / SIGNUP PAGE -->
+  <section id="loginPage" class="page active">
+    <div class="login-box">
+      <h1>User Login</h1>
+      <p class="sub-text">Login or Signup to continue</p>
+
+      <input type="text" id="username" placeholder="Username" />
+      <input type="email" id="email" placeholder="Email" />
+      <input type="password" id="password" placeholder="Password" />
+      <input type="text" id="phone" placeholder="Phone Number" />
+
+      <div class="btn-group">
+        <button type="button" id="loginBtn">Login</button>
+        <button type="button" id="signupBtn" class="secondary-btn">Signup</button>
+      </div>
+
+      <p id="loginMessage" class="message"></p>
+    </div>
+  </section>
+
+  <!-- SUBSCRIPTION PAGE -->
+  <section id="subscriptionPage" class="page hidden">
+    <div class="home-top">
+      <h2>Subscription Options</h2>
+      <p class="sub-text center-text">Choose your plan</p>
+    </div>
+
+    <div class="subscription-container">
+
+      <div class="subscription-card">
+        <img src="https://images.unsplash.com/photo-1610832958506-aa56368176cf?w=500" />
+        <h3>1-Day Plan</h3>
+        <p>Fresh fruit delivery for one day.</p>
+        <button type="button" onclick="openPlanPage('oneDayPlanPage')">
+          View 1-Day Plan
+        </button>
+      </div>
+
+      <div class="subscription-card">
+        <img src="https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=500" />
+        <h3>1-Week Plan</h3>
+        <p>Fresh fruit delivery for one week.</p>
+        <button type="button" onclick="openPlanPage('oneWeekPlanPage')">
+          View 1-Week Plan
+        </button>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- 1 DAY PLAN -->
+  <section id="oneDayPlanPage" class="page hidden">
+    <div class="home-top">
+      <h2>1-Day Plan</h2>
+      <button type="button" class="back-btn" onclick="showPage('subscriptionPage')">Back</button>
+    </div>
+
+    <div id="oneDayProducts" class="product-container"></div>
+
+    <div class="order-btn-box">
+      <button type="button" class="place-order-btn" onclick="openOrderPage('oneDayPlanPage')">
+        Place Order
+      </button>
+    </div>
+  </section>
+
+  <!-- 1 WEEK PLAN -->
+  <section id="oneWeekPlanPage" class="page hidden">
+    <div class="home-top">
+      <h2>1-Week Plan</h2>
+      <button type="button" class="back-btn" onclick="showPage('subscriptionPage')">Back</button>
+    </div>
+
+    <div id="oneWeekProducts" class="product-container"></div>
+
+    <div class="order-btn-box">
+      <button type="button" class="place-order-btn" onclick="openOrderPage('oneWeekPlanPage')">
+        Place Order
+      </button>
+    </div>
+  </section>
+
+  <!-- ORDER PAGE -->
+  <section id="orderPage" class="page hidden">
+    <div class="login-box">
+      <h1>Place Order</h1>
+      <p class="sub-text">Enter your details</p>
+
+      <input type="text" id="customerName" placeholder="Enter your name" />
+      <input type="text" id="customerPhone" placeholder="Enter phone number" />
+      <textarea id="customerAddress" placeholder="Enter address"></textarea>
+
+      <div class="btn-group">
+        <button type="button" onclick="submitOrder()">Submit Order</button>
+        <button type="button" class="secondary-btn" onclick="goBackToPlanPage()">Cancel</button>
+      </div>
+
+      <p id="orderMessage" class="message"></p>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer id="contact-support" class="footer">
+    <div class="footer-section">
+      <h3>Contact & Support</h3>
+
+      <div class="footer-links">
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms & Conditions</a>
+        <a href="#">FAQ / Help</a>
+      </div>
+
+      <div class="footer-contact">
+        <p><strong>Email:</strong> fruitshop@example.com</p>
+        <p><strong>Phone:</strong> +91 9876543210</p>
+        <p><strong>Address:</strong> Hyderabad, India</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ✅ IMPORTANT: Script at bottom -->
+  <script src="script.js"></script>
+
+</body>
+</html>
