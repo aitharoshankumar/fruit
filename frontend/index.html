@@ -12,16 +12,16 @@
   <header class="header">
     <div class="logo">🍎 Fruit Store</div>
 
-    <nav class="nav">
-      <a href="#" onclick="event.preventDefault(); showPage('loginPage')">Login</a>
-      <a href="#" onclick="event.preventDefault(); showPage('subscriptionPage')">Subscription</a>
-      <a href="#contact-support">Contact</a>
-    </nav>
+  <nav class="nav">
+    <a href="#login">Login</a>
+    <a href="#subscription">Subscription</a>
+    <a href="#contact-support">Contact</a>
+  </nav>
 
-    <button type="button" onclick="logout()" class="logout-btn">Logout</button>
+    <button type="button" onclick="logout()" class="logout-btn" style="background-color: red; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 15px;">Logout</button>
   </header>
 
-  <!-- LOGIN / SIGNUP PAGE -->
+  <!-- LOGIN PAGE -->
   <section id="loginPage" class="page active">
     <div class="login-box">
       <h1>User Login</h1>
@@ -37,7 +37,34 @@
         <button type="button" id="signupBtn" class="secondary-btn">Signup</button>
       </div>
 
+      <p style="margin-top: 10px;">
+        <a href="#forgot" style="color: #2e7d32; font-size: 14px;">
+          Forgot Password?
+        </a>
+      </p>
+
       <p id="loginMessage" class="message"></p>
+    </div>
+  </section>
+
+  <!-- FORGOT PASSWORD PAGE -->
+  <!-- FORGOT PASSWORD PAGE -->
+  <section id="forgotPage" class="page hidden">
+    <div class="login-box">
+      <h1>Reset Password</h1>
+      <p class="sub-text">Enter your details to reset password</p>
+
+      <input type="text" id="resetUsername" placeholder="Enter your Username" />
+      <input type="password" id="newPassword" placeholder="Enter New Password" />
+      <input type="password" id="confirmPassword" placeholder="Confirm New Password" />
+
+      <div class="btn-group">
+        <button type="button" id="resetBtn">Reset Password</button>
+        <button type="button" class="secondary-btn"
+          onclick="showPage('loginPage')">Back to Login</button>
+      </div>
+
+      <p id="resetMessage" class="message"></p>
     </div>
   </section>
 
@@ -49,25 +76,19 @@
     </div>
 
     <div class="subscription-container">
-
       <div class="subscription-card">
         <img src="https://images.unsplash.com/photo-1610832958506-aa56368176cf?w=500" />
         <h3>1-Day Plan</h3>
         <p>Fresh fruit delivery for one day.</p>
-        <button type="button" onclick="openPlanPage('oneDayPlanPage')">
-          View 1-Day Plan
-        </button>
+        <button type="button" onclick="openPlanPage('oneDayPlanPage')">View 1-Day Plan</button>
       </div>
 
       <div class="subscription-card">
         <img src="https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=500" />
         <h3>1-Week Plan</h3>
         <p>Fresh fruit delivery for one week.</p>
-        <button type="button" onclick="openPlanPage('oneWeekPlanPage')">
-          View 1-Week Plan
-        </button>
+        <button type="button" onclick="openPlanPage('oneWeekPlanPage')">View 1-Week Plan</button>
       </div>
-
     </div>
   </section>
 
@@ -77,13 +98,9 @@
       <h2>1-Day Plan</h2>
       <button type="button" class="back-btn" onclick="showPage('subscriptionPage')">Back</button>
     </div>
-
     <div id="oneDayProducts" class="product-container"></div>
-
     <div class="order-btn-box">
-      <button type="button" class="place-order-btn" onclick="openOrderPage('oneDayPlanPage')">
-        Place Order
-      </button>
+      <button type="button" class="place-order-btn" onclick="openOrderPage('oneDayPlanPage')">Place Order</button>
     </div>
   </section>
 
@@ -93,13 +110,9 @@
       <h2>1-Week Plan</h2>
       <button type="button" class="back-btn" onclick="showPage('subscriptionPage')">Back</button>
     </div>
-
     <div id="oneWeekProducts" class="product-container"></div>
-
     <div class="order-btn-box">
-      <button type="button" class="place-order-btn" onclick="openOrderPage('oneWeekPlanPage')">
-        Place Order
-      </button>
+      <button type="button" class="place-order-btn" onclick="openOrderPage('oneWeekPlanPage')">Place Order</button>
     </div>
   </section>
 
@@ -126,13 +139,11 @@
   <footer id="contact-support" class="footer">
     <div class="footer-section">
       <h3>Contact & Support</h3>
-
       <div class="footer-links">
         <a href="#">Privacy Policy</a>
         <a href="#">Terms & Conditions</a>
         <a href="#">FAQ / Help</a>
       </div>
-
       <div class="footer-contact">
         <p><strong>Email:</strong> fruitshop@example.com</p>
         <p><strong>Phone:</strong> +91 9876543210</p>
@@ -141,8 +152,6 @@
     </div>
   </footer>
 
-  <!-- ✅ IMPORTANT: Script at bottom -->
   <script src="script.js"></script>
-
 </body>
 </html>

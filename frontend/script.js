@@ -22,6 +22,56 @@ document.addEventListener("DOMContentLoaded", () => {
     element.style.color = color;
   }
 
+  // ================= PAGE NAV =================
+  window.showPage = function (pageId) {
+    const token = localStorage.getItem("token");
+
+    // Block if not logged in
+    if (!token && pageId !== "loginPage" && pageId !== "forgotPage") {
+      document.querySelectorAll(".page").forEach(page => {
+        page.classList.add("hidden");
+        page.classList.remove("active");
+      });
+      document.getElementById("loginPage").classList.remove("hidden");
+      document.getElementById("loginPage").classList.add("active");
+      window.location.hash = "#login";
+      const msg = document.getElementById("loginMessage");
+      msg.textContent = "⚠️ Please login or signup first!";
+      msg.style.color = "red";
+      return;
+    }
+
+    // Update URL hash
+    if (pageId === "loginPage") window.location.hash = "#login";
+    else if (pageId === "subscriptionPage") window.location.hash = "#subscription";
+    else if (pageId === "forgotPage") window.location.hash = "#forgot";
+    else if (pageId === "orderPage") window.location.hash = "#order";
+    else if (pageId === "oneDayPlanPage") window.location.hash = "#oneday";
+    else if (pageId === "oneWeekPlanPage") window.location.hash = "#oneweek";
+
+    // Normal page switch
+    document.querySelectorAll(".page").forEach(page => {
+      page.classList.add("hidden");
+      page.classList.remove("active");
+    });
+    document.getElementById(pageId).classList.remove("hidden");
+    document.getElementById(pageId).classList.add("active");
+  };
+
+  // ================= HASH ROUTING =================
+  function handleHash() {
+    const hash = window.location.hash || "#login";
+
+    if (hash === "#login") showPage("loginPage");
+    else if (hash === "#subscription") showPage("subscriptionPage");
+    else if (hash === "#signup") showPage("loginPage");
+    else if (hash === "#forgot") showPage("forgotPage");
+    else if (hash === "#oneday") showPage("oneDayPlanPage");
+    else if (hash === "#oneweek") showPage("oneWeekPlanPage");
+    else if (hash === "#order") showPage("orderPage");
+    // ✅ Don't redirect unknown hashes to login
+  }
+
   // ================= LOGIN =================
   loginBtn.addEventListener("click", async () => {
     const username = usernameInput.value.trim();
@@ -84,21 +134,50 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // ================= PAGE NAV =================
-  window.showPage = function (pageId) {
-    document.querySelectorAll(".page").forEach(page => {
-      page.classList.add("hidden");
-      page.classList.remove("active");
-    });
+  // ================= RESET PASSWORD =================
+  const resetBtn = document.getElementById("resetBtn");
+  const resetMessage = document.getElementById("resetMessage");
 
-    document.getElementById(pageId).classList.remove("hidden");
-    document.getElementById(pageId).classList.add("active");
-  };
+  resetBtn.addEventListener("click", async () => {
+    const username = document.getElementById("resetUsername").value.trim();
+    const newPassword = document.getElementById("newPassword").value.trim();
+    const confirmPassword = document.getElementById("confirmPassword").value.trim();
 
-  // ================= PLAN PAGE =================
-  window.openPlanPage = function (pageId) {
-    showPage(pageId);
-  };
+    if (!username || !newPassword || !confirmPassword) {
+      showMessage(resetMessage, "Please fill all fields", "red");
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      showMessage(resetMessage, "Passwords do not match!", "red");
+      return;
+    }
+
+    if (newPassword.length < 8) {
+      showMessage(resetMessage, "Password must be at least 8 characters", "red");
+      return;
+    }
+
+    try {
+      const res = await fetch("http://localhost:5001/api/reset-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, newPassword })
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message);
+
+      showMessage(resetMessage, "✅ " + data.message, "green");
+
+      setTimeout(() => {
+        showPage("loginPage");
+      }, 2000);
+
+    } catch (err) {
+      showMessage(resetMessage, err.message, "red");
+    }
+  });
 
   // ================= PRODUCTS WITH IMAGES =================
   const oneDayItems = [
@@ -140,7 +219,6 @@ document.addEventListener("DOMContentLoaded", () => {
   renderProducts(oneWeekItems, oneWeekProductsContainer);
 
   // ================= CART =================
-  // Add button — adds item first time
   window.addToCart = function (name, price) {
     if (!cart[name]) {
       cart[name] = { quantity: 1, price };
@@ -150,7 +228,6 @@ document.addEventListener("DOMContentLoaded", () => {
     updateQtyDisplay(name);
   };
 
-  // + button — increase quantity
   window.increaseQty = function (name, price) {
     if (!cart[name]) {
       cart[name] = { quantity: 1, price };
@@ -160,18 +237,16 @@ document.addEventListener("DOMContentLoaded", () => {
     updateQtyDisplay(name);
   };
 
-  // - button — decrease quantity
   window.decreaseQty = function (name) {
     if (cart[name] && cart[name].quantity > 0) {
       cart[name].quantity--;
       if (cart[name].quantity === 0) {
-        delete cart[name]; // remove from cart if 0
+        delete cart[name];
       }
     }
     updateQtyDisplay(name);
   };
 
-  // Updates the "Quantity: X" text on the card
   function updateQtyDisplay(name) {
     const qtyEl = document.getElementById("qty-" + name);
     if (qtyEl) {
@@ -239,4 +314,18 @@ document.addEventListener("DOMContentLoaded", () => {
     localStorage.removeItem("token");
     showPage("loginPage");
   };
+
+  // ================= PLAN PAGE =================
+  window.openPlanPage = function (pageId) {
+    // ✅ Reset cart when opening plan page
+    cart = {};
+
+    // ✅ Reset all quantity displays to 0
+    document.querySelectorAll(".qty-text").forEach(el => {
+      el.textContent = "Quantity: 0";
+    });
+
+    showPage(pageId);
+  };
+
 });
