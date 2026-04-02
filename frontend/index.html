@@ -48,7 +48,6 @@
   </section>
 
   <!-- FORGOT PASSWORD PAGE -->
-  <!-- FORGOT PASSWORD PAGE -->
   <section id="forgotPage" class="page hidden">
     <div class="login-box">
       <h1>Reset Password</h1>
@@ -121,6 +120,23 @@
     <div class="login-box">
       <h1>Place Order</h1>
       <p class="sub-text">Enter your details</p>
+
+      <!-- ✅ Cart Summary -->
+      <div id="cartSummary" style="
+        background: #f7fff7;
+        border: 1px solid #2e7d32;
+        border-radius: 8px;
+        padding: 12px;
+        margin-bottom: 15px;
+        text-align: left;
+      ">
+        <h3 style="color: #2e7d32; margin-bottom: 8px;">🛒 Your Cart</h3>
+        <div id="cartItems"></div>
+        <hr style="margin: 8px 0;" />
+        <p style="font-weight: bold; color: #333;">
+          Total: ₹<span id="cartTotal">0</span>
+        </p>
+      </div>
 
       <input type="text" id="customerName" placeholder="Enter your name" />
       <input type="text" id="customerPhone" placeholder="Enter phone number" />

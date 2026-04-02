@@ -8,7 +8,7 @@ const orderRoutes = require("./routes/orders");
 const app = express();
 
 app.use(cors({
-  origin: "http://localhost:5173", // change to your frontend domain in production
+  origin: "http://localhost:5173",
   methods: ["GET", "POST"],
   credentials: true
 }));

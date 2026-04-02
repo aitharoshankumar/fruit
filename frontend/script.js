@@ -41,13 +41,20 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    // Update URL hash
-    if (pageId === "loginPage") window.location.hash = "#login";
-    else if (pageId === "subscriptionPage") window.location.hash = "#subscription";
-    else if (pageId === "forgotPage") window.location.hash = "#forgot";
-    else if (pageId === "orderPage") window.location.hash = "#order";
-    else if (pageId === "oneDayPlanPage") window.location.hash = "#oneday";
-    else if (pageId === "oneWeekPlanPage") window.location.hash = "#oneweek";
+    // Update URL hash only if different
+    const hashMap = {
+      loginPage: "#login",
+      subscriptionPage: "#subscription",
+      forgotPage: "#forgot",
+      orderPage: "#order",
+      oneDayPlanPage: "#oneday",
+      oneWeekPlanPage: "#oneweek"
+    };
+
+    // ✅ Only update hash if it's different — prevents loop
+    if (hashMap[pageId] && window.location.hash !== hashMap[pageId]) {
+      window.location.hash = hashMap[pageId];
+    }
 
     // Normal page switch
     document.querySelectorAll(".page").forEach(page => {
@@ -69,8 +76,14 @@ document.addEventListener("DOMContentLoaded", () => {
     else if (hash === "#oneday") showPage("oneDayPlanPage");
     else if (hash === "#oneweek") showPage("oneWeekPlanPage");
     else if (hash === "#order") showPage("orderPage");
-    // ✅ Don't redirect unknown hashes to login
+    // ✅ Don't redirect unknown hashes to login 
+    // Run on page load can 
   }
+  handleHash();
+
+  // Run when hash changes
+  window.addEventListener("hashchange", handleHash);
+  
 
   // ================= LOGIN =================
   loginBtn.addEventListener("click", async () => {
@@ -255,8 +268,52 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ================= ORDER =================
-  window.openOrderPage = function (planPage) {
+      window.openOrderPage = function (planPage) {
     currentPlanPage = planPage;
+
+    // ✅ Image lookup from product lists
+    const allItems = [...oneDayItems, ...oneWeekItems];
+    const imageMap = {};
+    allItems.forEach(item => {
+      imageMap[item.name] = item.image;
+    });
+
+    // ✅ Show cart summary
+    const cartItems = document.getElementById("cartItems");
+    const cartTotal = document.getElementById("cartTotal");
+
+    // Check if cart is empty
+    if (Object.keys(cart).length === 0) {
+      cartItems.innerHTML = "<p style='color:red;'>⚠️ No items in cart! Please add items first.</p>";
+      cartTotal.textContent = "0";
+    } else {
+      cartItems.innerHTML = "";
+      let total = 0;
+
+      Object.keys(cart).forEach(key => {
+        const item = cart[key];
+        const itemTotal = item.quantity * item.price;
+        total += itemTotal;
+
+        // ✅ Show actual product image
+        const imgSrc = imageMap[key] || "";
+
+        cartItems.innerHTML += `
+          <div style="display:flex; align-items:center; gap:10px; margin: 6px 0;">
+            <img src="${imgSrc}" alt="${key}" 
+              style="width:50px; height:50px; object-fit:cover; border-radius:8px;" />
+            <p style="margin:0;">
+              <strong>${key}</strong> 
+              × ${item.quantity} 
+              = ₹${itemTotal}
+            </p>
+          </div>
+        `;
+      });
+
+      cartTotal.textContent = total;
+    }
+
     showPage("orderPage");
   };
 
