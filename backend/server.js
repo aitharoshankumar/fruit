@@ -8,7 +8,7 @@ const orderRoutes = require("./routes/orders");
 const app = express();
 
 app.use(cors({
-  origin: process.env.FRONTEND_URL,
+  origin: ["https://rohsantech.in", "https://www.rohsantech.in"],
   methods: ["GET", "POST"],
   credentials: true
 }));
