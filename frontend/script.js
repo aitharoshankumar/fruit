@@ -51,7 +51,6 @@ document.addEventListener("DOMContentLoaded", () => {
       oneWeekPlanPage: "#oneweek"
     };
 
-    // ✅ Only update hash if it's different — prevents loop
     if (hashMap[pageId] && window.location.hash !== hashMap[pageId]) {
       window.location.hash = hashMap[pageId];
     }
@@ -76,14 +75,13 @@ document.addEventListener("DOMContentLoaded", () => {
     else if (hash === "#oneday") showPage("oneDayPlanPage");
     else if (hash === "#oneweek") showPage("oneWeekPlanPage");
     else if (hash === "#order") showPage("orderPage");
-    // ✅ Don't redirect unknown hashes to login 
-    // Run on page load can 
   }
+
+  // Run on page load
   handleHash();
 
   // Run when hash changes
   window.addEventListener("hashchange", handleHash);
-  
 
   // ================= LOGIN =================
   loginBtn.addEventListener("click", async () => {
@@ -97,7 +95,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     try {
-      const res = await fetch("http://localhost:5001/api/login", {
+      const res = await fetch("http://rohsantech.in/api/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, email, password })
@@ -131,7 +129,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     try {
-      const res = await fetch("http://localhost:5001/api/signup", {
+      const res = await fetch("http://rohsantech.in/api/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, email, password, phone })
@@ -172,7 +170,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     try {
-      const res = await fetch("http://localhost:5001/api/reset-password", {
+      const res = await fetch("http://rohsantech.in/api/reset-password", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, newPassword })
@@ -268,24 +266,24 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ================= ORDER =================
-      window.openOrderPage = function (planPage) {
+  window.openOrderPage = function (planPage) {
     currentPlanPage = planPage;
 
-    // ✅ Image lookup from product lists
+    // Image lookup
     const allItems = [...oneDayItems, ...oneWeekItems];
     const imageMap = {};
     allItems.forEach(item => {
       imageMap[item.name] = item.image;
     });
 
-    // ✅ Show cart summary
     const cartItems = document.getElementById("cartItems");
     const cartTotal = document.getElementById("cartTotal");
 
     // Check if cart is empty
     if (Object.keys(cart).length === 0) {
-      cartItems.innerHTML = "<p style='color:red;'>⚠️ No items in cart! Please add items first.</p>";
-      cartTotal.textContent = "0";
+      alert("⚠️ Please add items to cart first!");
+      showPage(currentPlanPage);
+      return;
     } else {
       cartItems.innerHTML = "";
       let total = 0;
@@ -294,17 +292,15 @@ document.addEventListener("DOMContentLoaded", () => {
         const item = cart[key];
         const itemTotal = item.quantity * item.price;
         total += itemTotal;
-
-        // ✅ Show actual product image
         const imgSrc = imageMap[key] || "";
 
         cartItems.innerHTML += `
           <div style="display:flex; align-items:center; gap:10px; margin: 6px 0;">
-            <img src="${imgSrc}" alt="${key}" 
+            <img src="${imgSrc}" alt="${key}"
               style="width:50px; height:50px; object-fit:cover; border-radius:8px;" />
             <p style="margin:0;">
-              <strong>${key}</strong> 
-              × ${item.quantity} 
+              <strong>${key}</strong>
+              × ${item.quantity}
               = ₹${itemTotal}
             </p>
           </div>
@@ -339,8 +335,13 @@ document.addEventListener("DOMContentLoaded", () => {
       price: cart[key].price
     }));
 
+    if (items.length === 0) {
+      showMessage(orderMessage, "⚠️ No items in cart!", "red");
+      return;
+    }
+
     try {
-      const res = await fetch("http://localhost:5001/api/orders", {
+      const res = await fetch("http://rohsantech.in/api/orders", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -350,7 +351,7 @@ document.addEventListener("DOMContentLoaded", () => {
           customerName: name,
           phone,
           address,
-          planName: currentPlanPage,
+          planName: currentPlanPage === "oneDayPlanPage" ? "1-Day Plan" : "1-Week Plan",
           items
         })
       });
@@ -361,6 +362,11 @@ document.addEventListener("DOMContentLoaded", () => {
       showMessage(orderMessage, "Order placed successfully ✅", "green");
       cart = {};
 
+      // Reset quantity displays
+      document.querySelectorAll(".qty-text").forEach(el => {
+        el.textContent = "Quantity: 0";
+      });
+
     } catch (err) {
       showMessage(orderMessage, err.message, "red");
     }
@@ -369,20 +375,40 @@ document.addEventListener("DOMContentLoaded", () => {
   // ================= LOGOUT =================
   window.logout = function () {
     localStorage.removeItem("token");
+    cart = {};
     showPage("loginPage");
   };
 
   // ================= PLAN PAGE =================
   window.openPlanPage = function (pageId) {
-    // ✅ Reset cart when opening plan page
     cart = {};
-
-    // ✅ Reset all quantity displays to 0
     document.querySelectorAll(".qty-text").forEach(el => {
       el.textContent = "Quantity: 0";
     });
-
     showPage(pageId);
   };
+
+  // ================= SESSION EXPIRY =================
+  function checkTokenExpiry() {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
+    try {
+      const payload = JSON.parse(atob(token.split(".")[1]));
+      const expiry = payload.exp * 1000;
+
+      if (Date.now() > expiry) {
+        localStorage.removeItem("token");
+        showPage("loginPage");
+        const msg = document.getElementById("loginMessage");
+        msg.textContent = "⚠️ Session expired! Please login again.";
+        msg.style.color = "red";
+      }
+    } catch (err) {
+      localStorage.removeItem("token");
+    }
+  }
+
+  checkTokenExpiry();
 
 });
